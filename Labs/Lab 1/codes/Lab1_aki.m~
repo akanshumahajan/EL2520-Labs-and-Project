@@ -56,24 +56,50 @@ SGd.step_res()
 %% 
 
 constant = 1.16;
-p1 = ;
-p2 = ;
+p1 = 6;
+p2 = 8;
 wi = (constant)* Wcp_d;
 
 poles = TransferFn;
 poles.num = [1];
-poles.den = [1 (p1+p2) (p1*p2)]; 
-poles.sys_tf = poles.transfer_fn();
+poles.den = [1 (p1+p2) (p1*p2)];
+%poles.den = [1 p1]; 
+poles = poles.transfer_fn();
 
 Ginv_Gd = TransferFn;
-Ginv_Gd.sys_tf = 
+Ginv_Gd.sys_tf = multiply_tf(G_inv, Gd.sys_tf); %improper fraction
 
+Ginv_Gd.sys_tf = multiply_tf(Ginv_Gd.sys_tf, poles.sys_tf); % proper fraction
 
 Fy_new = TransferFn;
 Fy_new.num = [1 wi];
 Fy_new.den = [1 0];
-Fy.sys_tf = Fy.transfer_fn();
+Fy_new = Fy_new.transfer_fn();
 
+Fy_new.sys_tf = multiply_tf(Fy_new.sys_tf, Ginv_Gd.sys_tf);
+
+L_new = TransferFn;
+L_new.sys_tf = multiply_tf(Fy_new.sys_tf, G.sys_tf);
+
+S_new = TransferFn;
+S_new.sys_tf = 1/ (1+L_new.sys_tf);
+
+SGd_new = TransferFn;
+SGd.sys_tf = multiply_tf(S_new.sys_tf, Gd.sys_tf);
+%figure
+%SGd.bode_plot()
+figure
+SGd.step_res()
+
+
+figure
+SGd.bode_plot
+figure
+Fy_new.step_res
+figure
+pzmap(Fy_new.sys_tf)
+figure
+nyquist(Fy_new.sys_tf)
 
 
 
