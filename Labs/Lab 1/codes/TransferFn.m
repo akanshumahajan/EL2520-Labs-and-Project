@@ -1,7 +1,7 @@
 classdef TransferFn
     properties
-        num = 0;
-        den = 0;
+        num
+        den
         sys_tf
     end
     methods
