@@ -1,23 +1,24 @@
 %% 
-addpath(genpath('Lab 1'))
+addpath(genpath('Labs'))
 
 %% 
-g1 = TransferFn ;
-g1.num = [1 2];
-g1.den = [1 2 3];
-g1 = g1.transfer_fn();
+%g1 = TransferFn ;
+%g1.num = [1 2];
+%g1.den = [1 2 3];
+%g1 = g1.transfer_fn();
 %disp(g1)
 
-g2 = TransferFn ;
-g2.num = [1 2];
-g2.den = [1 2 3];
-g2 = g2.transfer_fn();
+%g2 = TransferFn ;
+%g2.num = [1 2];
+%g2.den = [1 2 3];
+%g2 = g2.transfer_fn();
 %disp(g2)
 
-product_tf = multiply_tf(g1.sys_tf, g2.sys_tf);
-[Gm, pm, wp, wc] = phaseM_ampM(g1.sys_tf, g2.sys_tf);
+%product_tf = multiply_tf(g1.sys_tf, g2.sys_tf);
+%[Gm, pm, wp, wc] = phaseM_gainM(g1.sys_tf, g2.sys_tf);
 
-%% 4.2 Disturbance attenuation
+%% 4.2.1 Disturbance attenuation
+clear all; close all; clc;
 G = TransferFn;
 G.num = [20];
 G.den = [1/400 21/400 21/20 1];
@@ -51,18 +52,25 @@ SGd.sys_tf = multiply_tf(S.sys_tf, Gd.sys_tf);
 %SGd.bode_plot()
 figure
 SGd.step_res()
+stepinfo(SGd.sys_tf)
 
 
-%% 
+%% 4.2.1 Disturbance attenuation
 
-constant = 1.5;
-p1 = 6;
-p2 = 8;
+close all; clc;
+constant = 75;
+p1 = 10000;
+p2 = 2000;
+
+%constant = 0.001;
+%p1 = 1.25;
+%p2 = 0.75;
+
 
 wi = (constant)* Wcp_d;
 
 poles = TransferFn;
-poles.num = [1];
+poles.num = [p1*p2];
 poles.den = [1 (p1+p2) (p1*p2)];
 %poles.den = [1 p1]; 
 poles = poles.transfer_fn();
@@ -92,10 +100,11 @@ figure
 SGd_new.bode_plot
 figure
 SGd_new.step_res
-figure
-pzmap(SGd_new.sys_tf)
-figure
-nyquist(SGd_new.sys_tf)
+stepinfo(SGd.sys_tf)
+%figure
+%pzmap(SGd_new.sys_tf)
+%figure
+%nyquist(SGd_new.sys_tf)
 
 
 
