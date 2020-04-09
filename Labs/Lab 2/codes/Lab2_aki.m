@@ -119,4 +119,24 @@ step(sys_nonminphase)
 
 % #######
 
-%% 
+%% Decentralised Control for min phase case
+
+phi_m = pi/3 ; % Intended phase margin
+w_c   = 0.02 ; % intended crossover frequency
+
+t_i1 = t_ij_pi(phi_m, w_c,G11_min.sys_tf);  % calling function to find t_i1
+[L11, mag1] = loop_gain_fn_mag(G11_min.sys_tf, t_i1, w_c); % calling function to find magnitude
+k_1 = 1/mag1;
+
+f_1s = pi_control(k_1, t_i1); % calling function to find PI controller
+figure
+bode (f_1s.sys_tf); % Plotting f1(s)
+
+t_i2 = t_ij_pi(phi_m, w_c,G22_min.sys_tf);  % calling function to find t_i2
+[L22, mag2] = loop_gain_fn_mag(G22_min.sys_tf, t_i2, w_c); % calling function to find magnitude
+k_2 = 1/mag2;
+
+f_2s = pi_control(k_2, t_i2); % calling function to find PI controller
+figure
+bode (f_2s.sys_tf); % Plotting f1(s)
+

@@ -1,3 +1,7 @@
+%% 
+addpath(genpath('Labs'))
+%% 
+
 clear all, close all, clc
 sysmp=minphase;
 s=tf('s');
