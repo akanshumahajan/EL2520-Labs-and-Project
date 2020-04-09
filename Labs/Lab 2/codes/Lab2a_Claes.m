@@ -34,8 +34,8 @@ Hinf=max(sigma)
 
 %%
 
-RGA=Gmax.*(((Gmax)^-1).')
-disp('Two RGA elements are negative, thus we cannot use decentralized control.')
+RGA=(G0.'*G0).*(((G0.'*G0)^-1).')
+disp('The off diagonal RGA elements are negative, whilst the other two elements are fairly close to 1. Thus decentralized control with the coupling input1<-->output1 and input2<-->output2 is recommended.')
 
 %%
 hold off
