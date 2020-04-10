@@ -10,6 +10,12 @@ classdef TransferFn
                 obj.sys_tf = tf(obj.num, obj.den);
             end
         end
+        function obj = num_den(obj)
+            [obj.num, obj.den] = tfdata(obj.sys_tf);
+            obj.num = obj.num{1,1};
+            obj.den = obj.den{1,1};
+        end
+        
         function bode_plot(obj)
             bode(obj.sys_tf)
         end

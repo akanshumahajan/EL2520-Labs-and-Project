@@ -59,6 +59,29 @@ step(sys_minphase)
 
 % #######
 
+%% Decentralised Control for min phase case
+
+phi_m = pi/3 ; % Intended phase margin
+w_c   = 0.1 ; % intended crossover frequency for minimum phase
+
+t_i1 = t_ij_pi(phi_m, w_c,G11_min.sys_tf);  % calling function to find t_i1
+[L11, mag1] = loop_gain_fn_mag(G11_min.sys_tf, t_i1, w_c); % calling function to find magnitude
+k_1 = 1/mag1;
+f_1s = pi_control(k_1, t_i1); % calling function to find PI controller
+
+figure
+bode (L11.sys_tf); % Plotting f1(s)
+[gm_l11,pm_l11,Wcg_l11,Wcp_l11]= phaseM_gainM(L11.sys_tf)
+
+t_i2 = t_ij_pi(phi_m, w_c,G22_min.sys_tf);  % calling function to find t_i2
+[L22, mag2] = loop_gain_fn_mag(G22_min.sys_tf, t_i2, w_c); % calling function to find magnitude
+k_2 = 1/mag2;
+f_2s = pi_control(k_2, t_i2); % calling function to find PI controller
+
+figure
+bode (L22.sys_tf); % Plotting f1(s)
+[gm_l22,pm_l22,Wcg_l22,Wcp_l22]= phaseM_gainM(L22.sys_tf)
+
 
 %% Non Minimum Phase
 
@@ -119,24 +142,35 @@ step(sys_nonminphase)
 
 % #######
 
-%% Decentralised Control for min phase case
+%% Decentralised Control for non min phase case
 
-phi_m = pi/3 ; % Intended phase margin
-w_c   = 0.02 ; % intended crossover frequency
+phi_m_non = pi/3 ; % Intended phase margin
+w_c_non   = 0.02 ; % intended crossover frequency for non minimum state
 
-t_i1 = t_ij_pi(phi_m, w_c,G11_min.sys_tf);  % calling function to find t_i1
-[L11, mag1] = loop_gain_fn_mag(G11_min.sys_tf, t_i1, w_c); % calling function to find magnitude
-k_1 = 1/mag1;
+t_i3 = t_ij_pi(phi_m_non, w_c_non,G12_non_min.sys_tf);  % calling function to find t_i2
+[L12, mag3] = loop_gain_fn_mag(G12_non_min.sys_tf, t_i3, w_c_non); % calling function to find magnitude
+k_3 = 1/mag3;
+f_3s = pi_control(k_3, t_i3); % calling function to find PI controller
 
-f_1s = pi_control(k_1, t_i1); % calling function to find PI controller
 figure
-bode (f_1s.sys_tf); % Plotting f1(s)
+bode (L12.sys_tf); % Plotting f1(s)
+[gm_l12,pm_l12,Wcg_l12,Wcp_l12]= phaseM_gainM(L12.sys_tf)
 
-t_i2 = t_ij_pi(phi_m, w_c,G22_min.sys_tf);  % calling function to find t_i2
-[L22, mag2] = loop_gain_fn_mag(G22_min.sys_tf, t_i2, w_c); % calling function to find magnitude
-k_2 = 1/mag2;
+t_i4 = t_ij_pi(phi_m_non, w_c_non,G21_non_min.sys_tf);  % calling function to find t_i2
+[L21, mag4] = loop_gain_fn_mag(G21_non_min.sys_tf, t_i4, w_c_non); % calling function to find magnitude
+k_4 = 1/mag4;
+f_4s = pi_control(k_4, t_i4); % calling function to find PI controller
 
-f_2s = pi_control(k_2, t_i2); % calling function to find PI controller
 figure
-bode (f_2s.sys_tf); % Plotting f1(s)
+bode (L21.sys_tf); % Plotting f1(s)
+[gm_l21,pm_l21,Wcg_l21,Wcp_l21]= phaseM_gainM(L21.sys_tf)
 
+%% Calculating Sensitivity and Complimentary Sensitivity Functions
+
+[S, T] = sens_comp_sens(L11, L12, L21, L22); % seems to be wrong
+
+F_num = {f_1s.num 1;1 f_2s.num};
+F_den = {f_1s.den 1;1 f_2s.den};
+F = tf(F_num, F_den);
+G = G_min;
+closedloop
