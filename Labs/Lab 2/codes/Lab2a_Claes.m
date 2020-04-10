@@ -1,7 +1,3 @@
-%% 
-addpath(genpath('Labs'))
-%% 
-
 clear all, close all, clc
 sysmp=minphase;
 s=tf('s');
@@ -39,7 +35,7 @@ Hinf=max(sigma)
 %%
 
 RGA=(G0.'*G0).*(((G0.'*G0)^-1).')
-disp('The off diagonal RGA elements are negative, whilst the other two elements are fairly close to 1. Thus decentralized control with the coupling input1<-->output1 and input2<-->output2 is recommended.')
+disp('The off diagonal RGA elements are negative, whilst the other two elements are bit less than 5. Thus decentralized control with the coupling input1<-->output1 and input2<-->output2 is not eally recommended, but at least better than input2<-->output1 and input1<-->output2 recommended.')
 
 %%
 hold off
@@ -51,7 +47,7 @@ Bnm=[0.1044, 0; 0, 0.09038; 0, 01506; 0.174, 0];
 Cnm=[0.2, 0, 0, 0; 0, 0.2, 0, 0];
 Dnm=[0, 0; 0, 0];
 
-Gm=Cnm*((s*eye(4)-Anm)^-1)*Bnm+Dnm;
+Gnm=Cnm*((s*eye(4)-Anm)^-1)*Bnm+Dnm;
 
 %%
 Gfnm=@(w) [0.02088/(w+0.05106), 0.003163/(w^2+0.01378*w+0.004265); 25.85/(w^2+0.1369*w+0.004382), 0.01808/(w+0.04692)];
@@ -71,12 +67,12 @@ loglog(wvnm, V_sigmanm(2,:));
 %bode(Gm)
 
 wmaxnm=0;
-Gmaxnm=Gf(0);
+Gmaxnm=Gfnm(0);
 sigmanm=eig(Gmaxnm.'*Gmaxnm);
 
 Hinfnm=max(sigmanm)
 
 %%
 format long
-RGAnm=Gmaxnm.*(((Gmaxnm)^-1).')
-disp('The off diagonal has two elements equal to 1, whilst the other diagonal has elements equal to zero. Thus, the pairing should be input1<-->output2; input2<-->output1 for almost a perfect decetralized control!')
+RGAnm=(Gmaxnm.'*Gmaxnm).*(((Gmaxnm.'*Gmaxnm)^-1).')
+disp('The off diagonal has two elements close to 1, whilst the other diagonal has negative elements. Thus, the pairing should be input1<-->output1; input2<-->output2 for a fairly decent control.')
