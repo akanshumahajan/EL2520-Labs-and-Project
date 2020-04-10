@@ -192,8 +192,9 @@ hold on
 sigma(T)
 %% Simulink Plot
 
-F_num = {f_1s.num 0;0 f_2s.num};
-F_den = {f_1s.den 1;1 f_2s.den};
+F_num = {f_3s.num 0;0 f_4s.num};
+F_den = {f_4s.den 1;1 f_4s.den};
+
 F = tf(F_num, F_den);
-G = G_min;
+G = G_non_min;
 closedloop
