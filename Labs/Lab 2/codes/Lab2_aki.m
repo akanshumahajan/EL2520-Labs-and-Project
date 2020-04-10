@@ -147,8 +147,8 @@ step(sys_nonminphase)
 phi_m_non = pi/3 ; % Intended phase margin
 w_c_non   = 0.02 ; % intended crossover frequency for non minimum state
 
-t_i3 = t_ij_pi(phi_m_non, w_c_non,G12_non_min.sys_tf);  % calling function to find t_i2
-[L12, mag3] = loop_gain_fn_mag(G12_non_min.sys_tf, t_i3, w_c_non); % calling function to find magnitude
+t_i3 = t_ij_pi(phi_m_non, w_c_non,G11_non_min.sys_tf);  % calling function to find t_i2
+[L12, mag3] = loop_gain_fn_mag(G11_non_min.sys_tf, t_i3, w_c_non); % calling function to find magnitude
 k_3 = 1/mag3;
 f_3s = pi_control(k_3, t_i3); % calling function to find PI controller
 
@@ -156,8 +156,8 @@ figure
 bode (L12.sys_tf); % Plotting f1(s)
 [gm_l12,pm_l12,Wcg_l12,Wcp_l12]= phaseM_gainM(L12.sys_tf)
 
-t_i4 = t_ij_pi(phi_m_non, w_c_non,G21_non_min.sys_tf);  % calling function to find t_i2
-[L21, mag4] = loop_gain_fn_mag(G21_non_min.sys_tf, t_i4, w_c_non); % calling function to find magnitude
+t_i4 = t_ij_pi(phi_m_non, w_c_non,G22_non_min.sys_tf);  % calling function to find t_i2
+[L21, mag4] = loop_gain_fn_mag(G22_non_min.sys_tf, t_i4, w_c_non); % calling function to find magnitude
 k_4 = 1/mag4;
 f_4s = pi_control(k_4, t_i4); % calling function to find PI controller
 
@@ -167,9 +167,32 @@ bode (L21.sys_tf); % Plotting f1(s)
 
 %% Calculating Sensitivity and Complimentary Sensitivity Functions
 
-[S, T] = sens_comp_sens(L11, L12, L21, L22); % seems to be wrong
+L11_min = TransferFn;
+L11_min.sys_tf = multiply_tf(G11_min.sys_tf, f_1s.sys_tf);
+L11_min = L11_min.num_den();
 
-F_num = {f_1s.num 1;1 f_2s.num};
+L12_min = TransferFn;
+L12_min.sys_tf = multiply_tf(G12_min.sys_tf, f_2s.sys_tf);
+L12_min = L12_min.num_den();
+
+L21_min = TransferFn;
+L21_min.sys_tf = multiply_tf(G21_min.sys_tf,f_1s.sys_tf);
+L21_min = L21_min.num_den();
+
+L22_min = TransferFn;
+L22_min.sys_tf = G22_min.sys_tf*f_2s.sys_tf;
+L22_min = L22_min.num_den();
+
+[L_min, S, T] = sens_comp_sens(L11, L12, L21, L22); % seems to be wrong
+figure
+bode(L_min)
+figure
+sigma(S)
+hold on
+sigma(T)
+%% Simulink Plot
+
+F_num = {f_1s.num 0;0 f_2s.num};
 F_den = {f_1s.den 1;1 f_2s.den};
 F = tf(F_num, F_den);
 G = G_min;
